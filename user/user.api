@@ -1,0 +1,216 @@
+syntax = "v1"
+
+/*
+公共接口：用户注册、登录、发送验证码、重置密码
+用户接口：获取/更新用户信息、修改密码（需要JWT认证）
+管理接口：用户列表管理（需要管理员权限）
+*/
+info (
+	title:   "用户服务API"
+	desc:    "用户注册、登录、信息管理服务"
+	author:  "another-mentor"
+	version: "v1"
+	email:   "yefun2004@gmail.com"
+)
+
+// 基础响应结构
+type BaseResponse {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+// 用户信息
+type User {
+	Id           int64  `json:"id"`
+	Username     string `json:"username"`
+	Email        string `json:"email"`
+	Phone        string `json:"phone,optional"`
+	Avatar       string `json:"avatar,optional"`
+	Nickname     string `json:"nickname,optional"`
+	Introduction string `json:"introduction,optional"`
+	CreateTime   int64  `json:"createTime"`
+	UpdateTime   int64  `json:"updateTime"`
+	Status       int    `json:"status"`
+}
+
+// 用户注册
+type (
+	RegisterRequest {
+		Username string `json:"username" validate:"required,min=5,max=20"`
+		Password string `json:"password" validate:"required,min=6,max=20"`
+		Email    string `json:"email" validate:"required,email"`
+		Code     string `json:"code" validate:"required"`
+	}
+	RegisterResponse {
+		BaseResponse
+		UserId int64 `json:"userId,optional"`
+	}
+)
+
+// 用户登录
+type (
+	LoginRequest {
+		Account  string `json:"account" validate:"required"` // 用户名或邮箱
+		Password string `json:"password" validate:"required"`
+	}
+	LoginResponse {
+		BaseResponse
+		Token     string `json:"token,optional"`
+		ExpiresIn int64  `json:"expiresIn,optional"`
+		User      User   `json:"user,optional"`
+	}
+)
+
+// 获取用户信息
+type (
+	GetUserInfoRequest {
+		UserId int64 `form:"userId,optional"` // 为空时返回当前登录用户信息
+	}
+	GetUserInfoResponse {
+		BaseResponse
+		User User `json:"user,optional"`
+	}
+)
+
+// 更新用户信息
+type (
+	UpdateUserInfoRequest {
+		Nickname     string `json:"nickname,optional"`
+		Avatar       string `json:"avatar,optional"`
+		Introduction string `json:"introduction,optional"`
+		Phone        string `json:"phone,optional"`
+	}
+	UpdateUserInfoResponse {
+		BaseResponse
+	}
+)
+
+// 更改密码
+type (
+	ChangePasswordRequest {
+		OldPassword string `json:"oldPassword" validate:"required"`
+		NewPassword string `json:"newPassword" validate:"required,min=6,max=20"`
+	}
+	ChangePasswordResponse {
+		BaseResponse
+	}
+)
+
+// 发送验证码
+type (
+	SendVerifyCodeRequest {
+		Email string `json:"email" validate:"required,email"`
+		Type  string `json:"type" validate:"required,oneof=register reset"`
+	}
+	SendVerifyCodeResponse {
+		BaseResponse
+	}
+)
+
+// 重置密码
+type (
+	ResetPasswordRequest {
+		Email    string `json:"email" validate:"required,email"`
+		Code     string `json:"code" validate:"required"`
+		Password string `json:"password" validate:"required,min=6,max=20"`
+	}
+	ResetPasswordResponse {
+		BaseResponse
+	}
+)
+
+@server (
+	group:  user
+	prefix: /api/v1/user
+)
+service user-api {
+
+	@doc(
+		summary: "用户注册"
+		description: "用户注册"
+	)
+	@handler Register
+	post /register (RegisterRequest) returns (RegisterResponse)
+
+	@doc(
+		summary: "用户登录"
+		description: "用户登录"
+	)
+	@handler Login
+	post /login (LoginRequest) returns (LoginResponse)
+
+	@doc(
+		summary: "发送验证码"
+		description: "发送验证码"
+	)
+	@handler SendVerifyCode
+	post /sendVerifyCode (SendVerifyCodeRequest) returns (SendVerifyCodeResponse)
+
+	@doc(
+		summary: "重置密码"
+		description: "重置密码"
+	)
+	@handler ResetPassword
+	post /resetPassword (ResetPasswordRequest) returns (ResetPasswordResponse)
+}
+
+@server (
+	group:  user
+	prefix: /api/v1/user
+	jwt:    Auth
+)
+service user-api {
+	@doc(
+		summary: "获取用户信息"
+		description: "获取用户信息，为空时返回当前登录用户信息"
+
+	)
+	@handler GetUserInfo
+	get /info (GetUserInfoRequest) returns (GetUserInfoResponse)
+
+	@doc(
+		summary: "更新用户信息"
+		description: "更新用户信息"
+
+	)
+	@handler UpdateUserInfo
+	put /info (UpdateUserInfoRequest) returns (UpdateUserInfoResponse)
+
+	@doc(
+		summary: "修改密码"
+		description: "修改密码"
+	)
+	@handler ChangePassword
+	put /password (ChangePasswordRequest) returns (ChangePasswordResponse)
+}
+
+@server (
+	group:      admin
+	prefix:     /api/v1/admin
+	jwt:        Auth
+	middleware: AdminAuth
+)
+service user-api {
+	@doc(
+		summary: "用户列表"
+		description: "获取用户列表"
+
+	)
+	@handler UserList
+	get /users (UserListRequest) returns (UserListResponse)
+}
+
+// 管理员接口所需类型
+type (
+	UserListRequest {
+		Page     int    `form:"page,default=1"`
+		PageSize int    `form:"pageSize,default=20"`
+		Keyword  string `form:"keyword,optional"`
+		Status   int    `form:"status,optional"`
+	}
+	UserListResponse {
+		BaseResponse
+		Total int64  `json:"total"`
+		List  []User `json:"list"`
+	}
+)

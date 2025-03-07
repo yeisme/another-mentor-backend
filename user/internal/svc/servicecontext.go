@@ -1,0 +1,19 @@
+package svc
+
+import (
+	"github.com/zeromicro/go-zero/rest"
+	"user/internal/config"
+	"user/internal/middleware"
+)
+
+type ServiceContext struct {
+	Config    config.Config
+	AdminAuth rest.Middleware
+}
+
+func NewServiceContext(c config.Config) *ServiceContext {
+	return &ServiceContext{
+		Config:    c,
+		AdminAuth: middleware.NewAdminAuthMiddleware().Handle,
+	}
+}

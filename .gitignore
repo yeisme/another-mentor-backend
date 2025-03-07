@@ -1,0 +1,16 @@
+# Go 项目文件
+dist/
+bin/
+vendor/
+*.exe
+*.test
+*.out
+
+# 临时文件
+tmp
+temp
+
+# IDE 配置文件
+.vscode
+.idea
+.vs
