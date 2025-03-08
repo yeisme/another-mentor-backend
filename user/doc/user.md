@@ -39,7 +39,57 @@ type BaseResponse struct {
 }
 ```
 
-### 2. 用户登录
+### 2. 获取用户详情
+
+1. route definition
+
+- Url: /api/v1/admin/users/:id
+- Method: GET
+- Request: `UserDetailRequest`
+- Response: `UserDetailResponse`
+
+2. request definition
+
+
+
+```golang
+type UserDetailRequest struct {
+	ID string `json:"id" validate:"required"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UserDetailResponse struct {
+	Code int `json:"code"`
+	Msg string `json:"msg"`
+	User User `json:"user"`
+}
+
+type BaseResponse struct {
+	Code int `json:"code"`
+	Msg string `json:"msg"`
+}
+
+type User struct {
+	Id int64 `json:"id"`
+	Username string `json:"username"`
+	Email string `json:"email"`
+	Phone string `json:"phone,optional"`
+	Avatar string `json:"avatar,optional"`
+	Nickname string `json:"nickname,optional"`
+	Introduction string `json:"introduction,optional"`
+	CreateTime int64 `json:"createTime"`
+	UpdateTime int64 `json:"updateTime"`
+	Status int `json:"status"`
+}
+```
+
+### 3. 用户登录
 
 1. route definition
 
@@ -92,7 +142,7 @@ type User struct {
 }
 ```
 
-### 3. 用户注册
+### 4. 用户注册
 
 1. route definition
 
@@ -132,7 +182,7 @@ type BaseResponse struct {
 }
 ```
 
-### 4. 重置密码
+### 5. 重置密码
 
 1. route definition
 
@@ -170,7 +220,7 @@ type BaseResponse struct {
 }
 ```
 
-### 5. 发送验证码
+### 6. 发送验证码
 
 1. route definition
 
@@ -207,7 +257,7 @@ type BaseResponse struct {
 }
 ```
 
-### 6. 获取用户信息
+### 7. 获取用户信息
 
 1. route definition
 
@@ -257,7 +307,7 @@ type User struct {
 }
 ```
 
-### 7. 更新用户信息
+### 8. 更新用户信息
 
 1. route definition
 
@@ -296,7 +346,7 @@ type BaseResponse struct {
 }
 ```
 
-### 8. 修改密码
+### 9. 修改密码
 
 1. route definition
 

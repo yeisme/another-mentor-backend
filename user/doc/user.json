@@ -65,11 +65,38 @@
         ],
         "consumes": [
           "multipart/form-data"
-        ],
-        "security": [
-          {
-            "apiKey": []
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}": {
+      "get": {
+        "summary": "获取用户详情",
+        "description": "根据用户ID获取用户详情",
+        "operationId": "GetUserDetail",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserDetailResponse"
+            }
           }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "admin"
         ]
       }
     },
@@ -101,11 +128,6 @@
         ],
         "consumes": [
           "multipart/form-data"
-        ],
-        "security": [
-          {
-            "apiKey": []
-          }
         ]
       },
       "put": {
@@ -132,11 +154,6 @@
         ],
         "tags": [
           "user"
-        ],
-        "security": [
-          {
-            "apiKey": []
-          }
         ]
       }
     },
@@ -193,11 +210,6 @@
         ],
         "tags": [
           "user"
-        ],
-        "security": [
-          {
-            "apiKey": []
-          }
         ]
       }
     },
@@ -580,6 +592,37 @@
         "createTime",
         "updateTime",
         "status"
+      ]
+    },
+    "UserDetailRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "UserDetailRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "UserDetailResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
+        }
+      },
+      "title": "UserDetailResponse",
+      "required": [
+        "user"
       ]
     },
     "UserListRequest": {

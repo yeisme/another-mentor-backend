@@ -26,7 +26,7 @@ doc:
 
 # 生成Go-Zero代码
 .PHONY: goctl.gen
-goctl.gen:
+goctl.gen: doc
 	goctl api go --dir . --api $(API_FILE)
 	go mod tidy
 
@@ -51,4 +51,4 @@ dev:
 
 # 一键式开发环境设置
 .PHONY: dev-setup
-dev-setup: init goctl.gen doc
+dev-setup: init goctl.gen
