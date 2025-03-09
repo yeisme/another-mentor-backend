@@ -93,6 +93,15 @@ type User struct {
 	Status       int    `json:"status"`
 }
 
+type UserDetailRequest struct {
+	ID string `json:"id" validate:"required"`
+}
+
+type UserDetailResponse struct {
+	BaseResponse
+	User User `json:"user"`
+}
+
 type UserListRequest struct {
 	Page     int    `form:"page,default=1"`
 	PageSize int    `form:"pageSize,default=20"`

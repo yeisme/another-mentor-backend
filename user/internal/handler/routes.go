@@ -19,34 +19,44 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.AdminAuth},
 			[]rest.Route{
 				{
+					// 用户列表
 					Method:  http.MethodGet,
 					Path:    "/users",
 					Handler: admin.UserListHandler(serverCtx),
 				},
+				{
+					// 获取用户详情
+					Method:  http.MethodGet,
+					Path:    "/users/:id",
+					Handler: admin.GetUserDetailHandler(serverCtx),
+				},
 			}...,
 		),
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/api/v1/admin"),
 	)
 
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				// 用户登录
 				Method:  http.MethodPost,
 				Path:    "/login",
 				Handler: user.LoginHandler(serverCtx),
 			},
 			{
+				// 用户注册
 				Method:  http.MethodPost,
 				Path:    "/register",
 				Handler: user.RegisterHandler(serverCtx),
 			},
 			{
+				// 重置密码
 				Method:  http.MethodPost,
 				Path:    "/resetPassword",
 				Handler: user.ResetPasswordHandler(serverCtx),
 			},
 			{
+				// 发送验证码
 				Method:  http.MethodPost,
 				Path:    "/sendVerifyCode",
 				Handler: user.SendVerifyCodeHandler(serverCtx),
@@ -56,24 +66,29 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	)
 
 	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodGet,
-				Path:    "/info",
-				Handler: user.GetUserInfoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPut,
-				Path:    "/info",
-				Handler: user.UpdateUserInfoHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPut,
-				Path:    "/password",
-				Handler: user.ChangePasswordHandler(serverCtx),
-			},
-		},
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.UserAuth},
+			[]rest.Route{
+				{
+					// 获取用户信息
+					Method:  http.MethodGet,
+					Path:    "/info",
+					Handler: user.GetUserInfoHandler(serverCtx),
+				},
+				{
+					// 更新用户信息
+					Method:  http.MethodPut,
+					Path:    "/info",
+					Handler: user.UpdateUserInfoHandler(serverCtx),
+				},
+				{
+					// 修改密码
+					Method:  http.MethodPut,
+					Path:    "/password",
+					Handler: user.ChangePasswordHandler(serverCtx),
+				},
+			}...,
+		),
 		rest.WithPrefix("/api/v1/user"),
 	)
 }

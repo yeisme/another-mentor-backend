@@ -2,13 +2,14 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
 	"user/internal/config"
+	"user/internal/data/database"
 	"user/internal/handler"
 	"user/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
 )
 
@@ -19,6 +20,9 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+	logx.MustSetup(c.Log)
+
+	database.InitDB(c.DataConfig)
 
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
@@ -26,6 +30,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
 
-	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
+	logx.Infof("Starting server at %s:%d", c.Host, c.Port)
 	server.Start()
+
 }
