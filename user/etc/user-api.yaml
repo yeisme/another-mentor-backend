@@ -8,7 +8,7 @@ DevServer:
   Port: 9090
 
 Log:
-  Mode: file
+  Mode: console
   Encoding: json
   TimeFormat: 2006-01-02 15:04:05
   Path: logs

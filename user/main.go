@@ -22,7 +22,7 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 	logx.MustSetup(c.Log)
 
-	database.InitDB()
+	database.InitDB(c.DataConfig)
 
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
@@ -30,7 +30,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
 
+	logx.Infof("Starting server at %s:%d", c.Host, c.Port)
 	server.Start()
-	logx.Infof("Starting server at %s:%d...", c.Host, c.Port)
 
 }
