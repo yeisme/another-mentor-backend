@@ -6,6 +6,7 @@ type (
 	Config struct {
 		rest.RestConf
 		DataConfig DataConfig `json:"data"`
+		Auth       Auth       `json:"Auth"`
 	}
 
 	DataConfig struct {
@@ -27,5 +28,13 @@ type (
 		ConnMaxLifetime int `json:"connMaxLifetime"`
 		// 是否启用自动迁移
 		AutoMigrate bool `json:"autoMigrate"`
+	}
+
+	// Auth 鉴权配置
+	Auth struct {
+		// 访问密钥
+		AccessSecret string `json:"AccessSecret"`
+		// 访问密钥过期时间
+		AccessExpire int `json:"AccessExpire"`
 	}
 )

@@ -3,7 +3,9 @@ module user
 go 1.24.0
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
+	github.com/stretchr/testify v1.10.0
 	github.com/zeromicro/go-zero v1.8.1
 	golang.org/x/crypto v0.33.0
 	gorm.io/driver/postgres v1.5.11
@@ -59,4 +61,5 @@ require (
 	google.golang.org/grpc v1.65.0 // indirect
 	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

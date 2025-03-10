@@ -155,7 +155,7 @@ func (r *userRepository) UpdateProfile(id int64, nickname, avatar, introduction 
 	}
 
 	// 更新字段
-	fields := make(map[string]interface{})
+	fields := make(map[string]any)
 	if nickname != "" {
 		fields["nickname"] = nickname
 	}
@@ -213,7 +213,7 @@ func (r *userRepository) UpdateStatus(id int64, status int) error {
 	}
 
 	// 更新状态
-	fields := map[string]interface{}{
+	fields := map[string]any{
 		"status":     status,
 		"updated_at": time.Now(),
 	}

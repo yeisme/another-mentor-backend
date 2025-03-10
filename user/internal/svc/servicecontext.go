@@ -16,7 +16,7 @@ type ServiceContext struct {
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:    c,
-		AdminAuth: middleware.NewAdminAuthMiddleware().Handle,
-		UserAuth:  middleware.NewUserAuthMiddleware().Handle,
+		AdminAuth: middleware.NewAdminAuthMiddleware(c).Handle,
+		UserAuth:  middleware.NewUserAuthMiddleware(c).Handle,
 	}
 }
