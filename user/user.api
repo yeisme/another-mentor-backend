@@ -118,8 +118,8 @@ type (
 		BaseResponse
 	}
 )
-
 @server (
+
 	group:  user
 	prefix: /api/v1/user
 )

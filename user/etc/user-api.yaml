@@ -24,3 +24,8 @@ data:
     connmaxlifetime: 300
     maxOpenConns: 100
     autoMigrate: true
+
+# JWT配置
+Auth:
+  AccessSecret: your_secret_key_here_please_change_in_production
+  AccessExpire: 604800  # 7天，单位为秒

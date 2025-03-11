@@ -2,8 +2,8 @@ package user
 
 import (
 	"context"
+	"net/http"
 
-	"user/internal/data/repository"
 	"user/internal/svc"
 	"user/internal/types"
 
@@ -30,20 +30,19 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 	if req.Username == "" || req.Password == "" || req.Email == "" || req.Code == "" {
 		return &types.RegisterResponse{
 			BaseResponse: types.BaseResponse{
-				Code: 400,
+				Code: http.StatusBadRequest,
 				Msg:  "参数错误",
 			},
 		}, nil
 	}
 
-	// 调用repository进行注册
-	userRepo := repository.NewUserRepository()
-	user, err := userRepo.Register(req.Username, req.Password, req.Email)
+	user, err := l.svcCtx.UserRepo.Register(req.Username, req.Password, req.Email)
+
 	if err != nil {
 		// 错误处理
 		return &types.RegisterResponse{
 			BaseResponse: types.BaseResponse{
-				Code: 400,
+				Code: http.StatusInternalServerError,
 				Msg:  "注册失败",
 			},
 		}, nil
@@ -52,7 +51,7 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 	// 构造响应
 	return &types.RegisterResponse{
 		BaseResponse: types.BaseResponse{
-			Code: 200,
+			Code: http.StatusOK,
 			Msg:  "注册成功",
 		},
 		UserId: user.ID,
