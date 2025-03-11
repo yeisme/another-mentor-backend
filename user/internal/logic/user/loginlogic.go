@@ -3,10 +3,8 @@ package user
 import (
 	"context"
 	"net/http"
-	"strconv"
 	"time"
 
-	"user/internal/data/repository"
 	"user/internal/svc"
 	"user/internal/types"
 	"user/internal/utils"
@@ -40,8 +38,7 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
     }
 
     // 调用repository进行登录
-    userRepo := repository.NewUserRepository()
-    user, err := userRepo.Login(req.Account, req.Password)
+	user, err := l.svcCtx.UserRepo.Login(req.Account, req.Password)
 
     if err != nil {
         return &types.LoginResponse{
@@ -62,7 +59,7 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
     claims := utils.JWTClaims{
         UserID:   user.ID,
         Username: user.Username,
-        Role:     strconv.Itoa(user.Role), // 将角色转换为字符串
+        Role:     user.Role, // 将角色转换为字符串
     }
 
     // 生成令牌

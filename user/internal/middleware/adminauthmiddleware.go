@@ -15,7 +15,9 @@ type AdminAuthMiddleware struct {
 }
 
 func NewAdminAuthMiddleware(c config.Config) *AdminAuthMiddleware {
-	return &AdminAuthMiddleware{}
+	return &AdminAuthMiddleware{
+		Config: c,
+	}
 }
 
 func (m *AdminAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {

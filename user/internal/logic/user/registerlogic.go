@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"user/internal/data/repository"
 	"user/internal/svc"
 	"user/internal/types"
 
@@ -37,9 +36,8 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 		}, nil
 	}
 
-	// 调用repository进行注册
-	userRepo := repository.NewUserRepository()
-	user, err := userRepo.Register(req.Username, req.Password, req.Email)
+	user, err := l.svcCtx.UserRepo.Register(req.Username, req.Password, req.Email)
+
 	if err != nil {
 		// 错误处理
 		return &types.RegisterResponse{

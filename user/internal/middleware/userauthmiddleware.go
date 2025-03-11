@@ -12,9 +12,9 @@ import (
 
 // 定义上下文key名称
 const (
-    UserIdKey   = "userId"
-    UsernameKey = "username"
-    RoleKey     = "role"
+	UserIdKey   = "userId"
+	UsernameKey = "username"
+	RoleKey     = "role"
 )
 
 type UserAuthMiddleware struct {
@@ -22,7 +22,9 @@ type UserAuthMiddleware struct {
 }
 
 func NewUserAuthMiddleware(c config.Config) *UserAuthMiddleware {
-	return &UserAuthMiddleware{}
+	return &UserAuthMiddleware{
+		Config: c,
+	}
 }
 
 func (m *UserAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
@@ -40,15 +42,14 @@ func (m *UserAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 
 		// 2. 提取 token 值 (Bearer token)
 		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-			httpx.WriteJson(w, http.StatusUnauthorized, map[string]interface{}{
-				"code": http.StatusUnauthorized,
-				"msg":  "认证格式错误",
-			})
-			return
-		}
-
-		token := parts[1]
+        if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+            httpx.WriteJson(w, http.StatusUnauthorized, map[string]any{
+                "code": http.StatusUnauthorized,
+                "msg":  "认证失败：token格式不正确",
+            })
+            return
+        }
+        token := parts[1]
 
 		// 3. 验证 token
 		jwt := utils.NewJWT(m.Config.Auth.AccessSecret)
@@ -56,7 +57,7 @@ func (m *UserAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		if err != nil {
 			httpx.WriteJson(w, http.StatusUnauthorized, map[string]any{
 				"code": http.StatusUnauthorized,
-				"msg":  err,
+				"msg":  "认证失败" + err.Error(),
 			})
 			return
 		}
@@ -72,8 +73,8 @@ func (m *UserAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 
 		// 5. 将用户信息存入请求上下文
 		ctx := context.WithValue(r.Context(), UserIdKey, claims.UserID)
-        ctx = context.WithValue(ctx, UsernameKey, claims.Username)
-        ctx = context.WithValue(ctx, RoleKey, claims.Role)
+		ctx = context.WithValue(ctx, UsernameKey, claims.Username)
+		ctx = context.WithValue(ctx, RoleKey, claims.Role)
 
 		next(w, r.WithContext(ctx))
 	}
