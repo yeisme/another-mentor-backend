@@ -14,6 +14,7 @@ type ServiceContext struct {
 	UserAuth  rest.Middleware
 	// 添加Repository字段
     UserRepo repository.UserRepository
+	AdminRepo repository.AdminRepository
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -22,6 +23,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		AdminAuth: middleware.NewAdminAuthMiddleware(c).Handle,
 		UserAuth:  middleware.NewUserAuthMiddleware(c).Handle,
 		UserRepo: repository.NewUserRepository(),
+		AdminRepo: repository.NewAdminRepository(),
 
 	}
 }

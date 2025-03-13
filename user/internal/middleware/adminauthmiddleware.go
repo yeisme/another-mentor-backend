@@ -51,12 +51,12 @@ func (m *AdminAuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		if err != nil {
 			httpx.WriteJson(w, http.StatusUnauthorized, map[string]any{
 				"code": http.StatusUnauthorized,
-				"msg":  err,
+				"msg":  "认证失败" + err.Error(),
 			})
 			return
 		}
 
-		// 4. 验证身份为 user 或者 admin
+		// 4. 验证身份为 admin
 		if claims.Role != "admin" {
 			httpx.WriteJson(w, http.StatusForbidden, map[string]any{
 				"code": http.StatusForbidden,

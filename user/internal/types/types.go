@@ -94,7 +94,7 @@ type User struct {
 }
 
 type UserDetailRequest struct {
-	ID string `json:"id" validate:"required"`
+	ID string `path:"id" validate:"required"`
 }
 
 type UserDetailResponse struct {

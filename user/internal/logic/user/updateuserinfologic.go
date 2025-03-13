@@ -26,7 +26,6 @@ func NewUpdateUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Up
 
 func (l *UpdateUserInfoLogic) UpdateUserInfo(req *types.UpdateUserInfoRequest) (resp *types.UpdateUserInfoResponse, err error) {
 
-
 	userId, _ := l.ctx.Value("userId").(int64)
 
 	// 调用Repository更新用户信息

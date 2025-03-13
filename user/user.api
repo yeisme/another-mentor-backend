@@ -118,8 +118,8 @@ type (
 		BaseResponse
 	}
 )
-@server (
 
+@server (
 	group:  user
 	prefix: /api/v1/user
 )
@@ -216,7 +216,7 @@ type (
 		List  []User `json:"list"`
 	}
 	UserDetailRequest {
-		ID string `json:"id" validate:"required"`
+		ID string `path:"id" validate:"required"`
 	}
 	UserDetailResponse {
 		BaseResponse

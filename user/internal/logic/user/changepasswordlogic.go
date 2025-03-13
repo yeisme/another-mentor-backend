@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"net/http"
 
 	"user/internal/svc"
 	"user/internal/types"
@@ -24,7 +25,33 @@ func NewChangePasswordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ch
 }
 
 func (l *ChangePasswordLogic) ChangePassword(req *types.ChangePasswordRequest) (resp *types.ChangePasswordResponse, err error) {
-	// todo: add your logic here and delete this line
 
-	return
+	if req.OldPassword == "" || req.NewPassword == "" {
+		return &types.ChangePasswordResponse{
+			BaseResponse: types.BaseResponse{
+				Code: http.StatusBadRequest,
+				Msg:  "密码不能为空",
+			},
+		}, err
+	}
+
+	// UserId 通过 token 获取
+	userId, _ := l.ctx.Value("userId").(int64)
+	err = l.svcCtx.UserRepo.UpdatePassword(userId, req.OldPassword, req.NewPassword)
+
+	if err != nil {
+		return &types.ChangePasswordResponse{
+			BaseResponse: types.BaseResponse{
+				Code: http.StatusInternalServerError,
+				Msg:  "密码修改失败: " + err.Error(),
+			},
+		}, err
+	}
+
+	return &types.ChangePasswordResponse{
+		BaseResponse: types.BaseResponse{
+			Code: http.StatusOK,
+			Msg:  "密码修改成功",
+		},
+	}, nil
 }
