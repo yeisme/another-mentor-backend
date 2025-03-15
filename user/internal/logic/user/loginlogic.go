@@ -37,6 +37,8 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginResponse, 
         }, nil
     }
 
+	// TODO 对比 redis 缓存的验证码与接收到的验证码是否一致
+
     // 调用repository进行登录
 	user, err := l.svcCtx.UserRepo.Login(req.Account, req.Password)
 

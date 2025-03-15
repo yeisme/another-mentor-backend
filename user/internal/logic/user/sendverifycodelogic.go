@@ -23,7 +23,7 @@ func NewSendVerifyCodeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Se
 	}
 }
 
-// TODO  将生成的验证码保存到缓存中，然后发送到用户邮箱
+// TODO  将生成的验证码保存到缓存中，然后发送到用户邮箱，对比用户输入的验证码是否正确（登录 logic 中）
 func (l *SendVerifyCodeLogic) SendVerifyCode(req *types.SendVerifyCodeRequest) (resp *types.SendVerifyCodeResponse, err error) {
 	// todo: add your logic here and delete this line
 
