@@ -41,7 +41,7 @@ init:
 
 # 构建服务
 .PHONY: build
-build:
+build: format
 	go build .
 
 # 开发

@@ -1,0 +1,53 @@
+version: "3"
+
+services:
+  user-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "8081:9090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - TZ=Asia/Shanghai
+      # 添加数据库连接信息
+      - DB_HOST=${DB_HOST:-postgres}  # 添加默认值
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_NAME=${DB_NAME:-another_mentor_user}
+    networks:
+      - another-mentor-network
+    volumes:
+      - ./logs:/app/logs
+      - ./etc:/app/etc
+    command: ["./user", "-f", "etc/user-api.docker.yaml"]
+    restart: always
+
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-another_mentor_user}
+      TZ: Asia/Shanghai
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./user_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - another-mentor-network
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  another-mentor-network:
+    driver: bridge
