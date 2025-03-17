@@ -1,5 +1,11 @@
 version: "3"
 
+x-user-configs: &pg-config-env
+  POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+  POSTGRES_USER: ${POSTGRES_USER:-postgres}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+  TZ: Asia/Shanghai
+
 services:
   user-api:
     build:
@@ -12,13 +18,8 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - TZ=Asia/Shanghai
-      # 添加数据库连接信息
-      - DB_HOST=${DB_HOST:-postgres}  # 添加默认值
-      - DB_PORT=${DB_PORT:-5432}
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-postgres}
-      - DB_NAME=${DB_NAME:-another_mentor_user}
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      <<: *pg-config-env
     networks:
       - another-mentor-network
     volumes:
@@ -30,10 +31,7 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-another_mentor_user}
-      TZ: Asia/Shanghai
+      <<: *pg-config-env
     ports:
       - "5432:5432"
     volumes:
