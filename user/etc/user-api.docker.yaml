@@ -18,12 +18,23 @@ Log:
 
 data:
   driver: postgres
-  dsn: host=postgres port=5432 user=postgres password=postgres dbname=another_mentor_user sslmode=disable TimeZone=Asia/Shanghai
+  dsn: host=postgres port=5432 user=postgres password=postgres dbname=user sslmode=disable TimeZone=Asia/Shanghai
   gorm:
     maxIdleConns: 10
     connmaxlifetime: 300
     maxOpenConns: 100
     autoMigrate: true
+  redis:
+    addr: redis:6379
+    password: ""
+    db: 0
+    poolSize: 10
+    minIdleConns: 10
+    connTimeout: 1000
+    readTimeout: 1000
+    writeTimeout: 1000
+    idleTimeout: 1000
+    maxConnAge: 1000
 
 # JWT配置
 Auth:

@@ -54,7 +54,7 @@ type BaseResponse struct {
 
 ```golang
 type UserDetailRequest struct {
-	ID string `json:"id" validate:"required"`
+	ID string `path:"id" validate:"required"`
 }
 ```
 
@@ -249,6 +249,8 @@ type SendVerifyCodeRequest struct {
 type SendVerifyCodeResponse struct {
 	Code int `json:"code"`
 	Msg string `json:"msg"`
+	CaptchaId string `json:"captchaId"`
+	CaptchaImage string `json:"captchaImage"`
 }
 
 type BaseResponse struct {

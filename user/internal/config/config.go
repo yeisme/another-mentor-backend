@@ -16,6 +16,8 @@ type (
 		DSN string `json:"dsn"`
 		// 关系型数据库配置 TODO: 目前使用gorm
 		GormConfig GormConfig `json:"gorm"`
+		// 缓存配置
+		CacheConfig CacheConfig `json:"cache"`
 	}
 
 	// GORM配置
@@ -36,5 +38,20 @@ type (
 		AccessSecret string `json:"AccessSecret"`
 		// 访问密钥过期时间
 		AccessExpire int `json:"AccessExpire"`
+	}
+
+	// CacheConfig 缓存配置
+	CacheConfig struct {
+		Redis RedisConfig `json:"redis"`
+	}
+
+	RedisConfig struct {
+		Addr         string `json:"addr"`
+		Password     string `json:"password"`
+		DB           int    `json:"db"`
+		PoolSize     int    `json:"poolSize"`
+		MinIdleConns int    `json:"minIdleConns"`
+		ReadTimeout  int    `json:"readTimeout"`
+		WriteTimeout int    `json:"writeTimeout"`
 	}
 )

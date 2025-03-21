@@ -7,5 +7,7 @@
             "path": "user"
         }
     ],
-    "settings": {}
+    "settings": {
+        "commentTranslate.hover.enabled": false
+    }
 }

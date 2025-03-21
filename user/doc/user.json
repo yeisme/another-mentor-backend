@@ -87,12 +87,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "query",
-            "required": true,
-            "type": "string"
           }
         ],
         "tags": [
@@ -511,9 +505,19 @@
         },
         "msg": {
           "type": "string"
+        },
+        "captchaId": {
+          "type": "string"
+        },
+        "captchaImage": {
+          "type": "string"
         }
       },
-      "title": "SendVerifyCodeResponse"
+      "title": "SendVerifyCodeResponse",
+      "required": [
+        "captchaId",
+        "captchaImage"
+      ]
     },
     "UpdateUserInfoRequest": {
       "type": "object",
@@ -596,15 +600,7 @@
     },
     "UserDetailRequest": {
       "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        }
-      },
-      "title": "UserDetailRequest",
-      "required": [
-        "id"
-      ]
+      "title": "UserDetailRequest"
     },
     "UserDetailResponse": {
       "type": "object",

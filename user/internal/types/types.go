@@ -67,6 +67,8 @@ type SendVerifyCodeRequest struct {
 
 type SendVerifyCodeResponse struct {
 	BaseResponse
+	CaptchaId    string `json:"captchaId"`
+	CaptchaImage string `json:"captchaImage"`
 }
 
 type UpdateUserInfoRequest struct {

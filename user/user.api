@@ -104,6 +104,8 @@ type (
 	}
 	SendVerifyCodeResponse {
 		BaseResponse
+		CaptchaId    string `json:"captchaId"`
+		CaptchaImage string `json:"captchaImage"`
 	}
 )
 
