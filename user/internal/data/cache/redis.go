@@ -16,6 +16,7 @@ func NewCache(cacheConfig config.CacheConfig) *redis.Client {
 		logx.Error("Init redis failed")
 		return nil
 	}
+	logx.Info("Init redis success")
 	return RDC
 }
 

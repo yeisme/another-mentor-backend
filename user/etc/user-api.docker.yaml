@@ -24,17 +24,15 @@ data:
     connmaxlifetime: 300
     maxOpenConns: 100
     autoMigrate: true
-  redis:
-    addr: redis:6379
-    password: ""
-    db: 0
-    poolSize: 10
-    minIdleConns: 10
-    connTimeout: 1000
-    readTimeout: 1000
-    writeTimeout: 1000
-    idleTimeout: 1000
-    maxConnAge: 1000
+  cache:
+    redis:
+      addr: redis:6379
+      password: ""
+      db: 0
+      poolSize: 20
+      minIdleConns: 10
+      readTimeout: 1000
+      writeTimeout: 1000
 
 # JWT配置
 Auth:
