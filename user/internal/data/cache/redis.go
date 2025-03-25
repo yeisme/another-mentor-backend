@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"time"
 	"user/internal/config"
 
@@ -17,11 +18,12 @@ func NewCache(cacheConfig config.CacheConfig) *redis.Client {
 		return nil
 	}
 	logx.Info("Init redis success")
+
 	return RDC
 }
 
 func InitRedis(cacheConfig config.CacheConfig) *redis.Client {
-	return redis.NewClient(&redis.Options{
+	client := redis.NewClient(&redis.Options{
 		Addr:         cacheConfig.Redis.Addr,
 		Password:     cacheConfig.Redis.Password,
 		DB:           cacheConfig.Redis.DB,
@@ -30,4 +32,12 @@ func InitRedis(cacheConfig config.CacheConfig) *redis.Client {
 		ReadTimeout:  time.Duration(cacheConfig.Redis.ReadTimeout) * time.Second,
 		WriteTimeout: time.Duration(cacheConfig.Redis.WriteTimeout) * time.Second,
 	})
+
+	// 测试连接
+    if err := client.Ping(context.Background()).Err(); err != nil {
+        logx.Errorf("连接 Redis 失败: %v", err)
+        return nil
+    }
+
+	return client
 }

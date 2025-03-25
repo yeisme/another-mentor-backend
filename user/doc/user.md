@@ -161,6 +161,7 @@ type RegisterRequest struct {
 	Password string `json:"password" validate:"required,min=6,max=20"`
 	Email string `json:"email" validate:"required,email"`
 	Code string `json:"code" validate:"required"`
+	CaptchaId string `json:"captchaId" validate:"required"`
 }
 ```
 

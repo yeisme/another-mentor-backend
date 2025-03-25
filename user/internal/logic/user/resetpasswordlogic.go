@@ -25,5 +25,7 @@ func NewResetPasswordLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Res
 
 func (l *ResetPasswordLogic) ResetPassword(req *types.ResetPasswordRequest) (resp *types.ResetPasswordResponse, err error) {
 
+	// 重置密码需要 邮箱 或者 手机号 接收验证码
+
 	return
 }

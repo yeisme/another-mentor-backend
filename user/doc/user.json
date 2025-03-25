@@ -420,6 +420,9 @@
         },
         "code": {
           "type": "string"
+        },
+        "captchaId": {
+          "type": "string"
         }
       },
       "title": "RegisterRequest",
@@ -427,7 +430,8 @@
         "username",
         "password",
         "email",
-        "code"
+        "code",
+        "captchaId"
       ]
     },
     "RegisterResponse": {
