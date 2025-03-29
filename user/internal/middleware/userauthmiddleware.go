@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"user/internal/config"
-	"user/internal/utils"
+	"user/pkgs/utils"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
 )

@@ -7,7 +7,7 @@ import (
 
 	"user/internal/svc"
 	"user/internal/types"
-	"user/internal/utils"
+	"user/pkgs/utils"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
