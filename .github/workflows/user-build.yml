@@ -37,7 +37,7 @@ jobs:
         working-directory: user
         run: |
           go mod tidy
-          go build -v ./main.go
+          go build -v ./user.go
 
       - name: Run tests
         working-directory: user
