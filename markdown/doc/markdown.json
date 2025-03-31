@@ -1,0 +1,1653 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Markdown 文件服务 API",
+    "description": "基于 MinIO 的 Markdown 文件管理服务",
+    "version": "v1"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/batch": {
+      "delete": {
+        "summary": "批量删除文件",
+        "operationId": "BatchDeleteHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/BatchDeleteResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " 批量操作 - 保留最核心的批量删除",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BatchDeleteRequest"
+            }
+          }
+        ],
+        "tags": [
+          "markdown"
+        ]
+      }
+    },
+    "/api/v1/file/{filename}": {
+      "get": {
+        "summary": "获取文件内容",
+        "operationId": "DownloadHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DownloadResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "msg",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "content",
+            "description": " 小文件直接返回内容",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "downloadUrl",
+            "description": " 预签名的S3下载URL",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "filename",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "uploadTime",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "updateTime",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "ownerId",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "downloadUrl",
+            "description": " 预签名的 S3 URL",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "isPublic",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "isDeleted",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "path",
+            "description": " S3对象的完整路径",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "markdown"
+        ]
+      },
+      "delete": {
+        "summary": "删除文件",
+        "operationId": "DeleteHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeleteResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "markdown"
+        ]
+      },
+      "put": {
+        "summary": "更新文件信息",
+        "operationId": "UpdateFileHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateFileResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateFileRequest"
+            }
+          }
+        ],
+        "tags": [
+          "markdown"
+        ]
+      }
+    },
+    "/api/v1/files": {
+      "get": {
+        "summary": "获取当前用户的文件列表",
+        "operationId": "MyFilesHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageoptionaldefault=1",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSizeoptionaldefault=20",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pathoptionaldefault=/",
+            "description": " S3路径前缀，替代文件夹ID",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sortByoptionaldefault=updateTime",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "orderoptionaldefault=desc",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "recursiveoptionaldefault=false",
+            "description": " 是否递归列出子目录",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          }
+        ],
+        "tags": [
+          "markdown"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/v1/files/public": {
+      "get": {
+        "summary": "获取当前用户公开文件列表",
+        "operationId": "MyPublicFilesHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageoptionaldefault=1",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSizeoptionaldefault=20",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pathoptionaldefault=/",
+            "description": " S3路径前缀，替代文件夹ID",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sortByoptionaldefault=updateTime",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "orderoptionaldefault=desc",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "recursiveoptionaldefault=false",
+            "description": " 是否递归列出子目录",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          }
+        ],
+        "tags": [
+          "markdown"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/v1/files/trash": {
+      "get": {
+        "summary": "获取当前用户回收站文件",
+        "operationId": "RecycleBinHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageoptionaldefault=1",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSizeoptionaldefault=20",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pathoptionaldefault=/",
+            "description": " S3路径前缀，替代文件夹ID",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sortByoptionaldefault=updateTime",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "orderoptionaldefault=desc",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "recursiveoptionaldefault=false",
+            "description": " 是否递归列出子目录",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          }
+        ],
+        "tags": [
+          "markdown"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      },
+      "delete": {
+        "summary": "清空回收站",
+        "operationId": "EmptyTrashHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeleteResponse"
+            }
+          }
+        },
+        "tags": [
+          "markdown"
+        ]
+      }
+    },
+    "/api/v1/presigned-url": {
+      "post": {
+        "summary": "获取预签名URL",
+        "operationId": "GetPresignedUrlHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PresignedUrlResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " 简化的预签名URL请求",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PresignedUrlRequest"
+            }
+          }
+        ],
+        "tags": [
+          "markdown"
+        ]
+      }
+    },
+    "/api/v1/public/file/{hash}": {
+      "get": {
+        "summary": "获取公开文件",
+        "operationId": "GetPublicFileHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {}
+          }
+        },
+        "parameters": [
+          {
+            "name": "hash",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "msg",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "content",
+            "description": " 小文件直接返回内容",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "downloadUrl",
+            "description": " 预签名的S3下载URL",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "filename",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "uploadTime",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "updateTime",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "ownerId",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "downloadUrl",
+            "description": " 预签名的 S3 URL",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "isPublic",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "isDeleted",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "tags",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "path",
+            "description": " S3对象的完整路径",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/public/files": {
+      "get": {
+        "summary": "浏览公开文件列表",
+        "operationId": "ListPublicFilesHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageoptionaldefault=1",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSizeoptionaldefault=20",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pathoptionaldefault=/",
+            "description": " S3路径前缀，替代文件夹ID",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "sortByoptionaldefault=updateTime",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "orderoptionaldefault=desc",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "recursiveoptionaldefault=false",
+            "description": " 是否递归列出子目录",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          }
+        ],
+        "tags": [
+          "public"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/v1/public/search": {
+      "get": {
+        "summary": "搜索公开文件",
+        "operationId": "SearchPublicHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SearchResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "isPublicoptional",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "pageoptionaldefault=1",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSizeoptionaldefault=10",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "tagsoptional",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathoptional",
+            "description": " 在指定路径下搜索",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "public"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/v1/public/share/access": {
+      "post": {
+        "summary": "访问分享链接",
+        "operationId": "AccessSharedFileHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DownloadResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ShareAccessRequest"
+            }
+          }
+        ],
+        "tags": [
+          "public"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/v1/public/tags/popular": {
+      "get": {
+        "summary": "热门标签",
+        "operationId": "PopularTagsHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/TagsResponse"
+            }
+          }
+        },
+        "tags": [
+          "public"
+        ]
+      }
+    },
+    "/api/v1/recover": {
+      "post": {
+        "summary": "恢复已删除文件",
+        "operationId": "RecoverFileHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RecoverFileResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " 回收站相关",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RecoverFileRequest"
+            }
+          }
+        ],
+        "tags": [
+          "markdown"
+        ]
+      }
+    },
+    "/api/v1/search": {
+      "get": {
+        "summary": "搜索文件",
+        "operationId": "SearchHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SearchResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "isPublicoptional",
+            "in": "query",
+            "required": true,
+            "type": "boolean",
+            "format": "boolean"
+          },
+          {
+            "name": "pageoptionaldefault=1",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageSizeoptionaldefault=10",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "tagsoptional",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pathoptional",
+            "description": " 在指定路径下搜索",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "markdown"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    },
+    "/api/v1/share": {
+      "post": {
+        "summary": "分享文件",
+        "operationId": "ShareFileHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ShareResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " 精简后的分享相关类型",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ShareRequest"
+            }
+          }
+        ],
+        "tags": [
+          "markdown"
+        ]
+      }
+    },
+    "/api/v1/stats": {
+      "get": {
+        "summary": "获取文件统计信息",
+        "operationId": "StatsHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/StatsResponse"
+            }
+          }
+        },
+        "tags": [
+          "markdown"
+        ]
+      }
+    },
+    "/api/v1/tags": {
+      "get": {
+        "summary": "获取用户所有标签",
+        "operationId": "GetTagsHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/TagsResponse"
+            }
+          }
+        },
+        "tags": [
+          "markdown"
+        ]
+      }
+    },
+    "/api/v1/upload": {
+      "post": {
+        "summary": "上传文件",
+        "operationId": "UploadHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UploadResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " 核心请求/响应类型",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UploadRequest"
+            }
+          }
+        ],
+        "tags": [
+          "markdown"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "BaseResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        }
+      },
+      "title": "BaseResponse",
+      "required": [
+        "code",
+        "msg"
+      ]
+    },
+    "BatchDeleteRequest": {
+      "type": "object",
+      "properties": {
+        "filenames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "BatchDeleteRequest",
+      "required": [
+        "filenames"
+      ]
+    },
+    "BatchDeleteResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "successCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "failedCount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "BatchDeleteResponse",
+      "required": [
+        "successCount",
+        "failedCount"
+      ]
+    },
+    "DeleteResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        }
+      },
+      "title": "DeleteResponse"
+    },
+    "DownloadResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string",
+          "description": " 小文件直接返回内容"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "description": " 预签名的S3下载URL"
+        },
+        "file": {
+          "$ref": "#/definitions/MarkdownFile"
+        }
+      },
+      "title": "DownloadResponse",
+      "required": [
+        "downloadUrl"
+      ]
+    },
+    "ErrorCode": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "integer",
+          "format": "int32",
+          "description": " 200: 成功"
+        },
+        "badRequest": {
+          "type": "integer",
+          "format": "int32",
+          "description": " 400: 请求参数错误"
+        },
+        "unauthorized": {
+          "type": "integer",
+          "format": "int32",
+          "description": " 401: 未授权"
+        },
+        "forbidden": {
+          "type": "integer",
+          "format": "int32",
+          "description": " 403: 禁止访问"
+        },
+        "notFound": {
+          "type": "integer",
+          "format": "int32",
+          "description": " 404: 资源不存在"
+        },
+        "fileTooLarge": {
+          "type": "integer",
+          "format": "int32",
+          "description": " 413: 文件过大"
+        },
+        "internalError": {
+          "type": "integer",
+          "format": "int32",
+          "description": " 500: 内部服务器错误"
+        },
+        "storageError": {
+          "type": "integer",
+          "format": "int32",
+          "description": " 507: 存储空间不足"
+        }
+      },
+      "title": "ErrorCode",
+      "required": [
+        "success",
+        "badRequest",
+        "unauthorized",
+        "forbidden",
+        "notFound",
+        "fileTooLarge",
+        "internalError",
+        "storageError"
+      ]
+    },
+    "ListRequest": {
+      "type": "object",
+      "properties": {
+        "pageoptionaldefault=1": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSizeoptionaldefault=20": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pathoptionaldefault=/": {
+          "type": "string",
+          "description": " S3路径前缀，替代文件夹ID"
+        },
+        "sortByoptionaldefault=updateTime": {
+          "type": "string"
+        },
+        "orderoptionaldefault=desc": {
+          "type": "string"
+        },
+        "recursiveoptionaldefault=false": {
+          "type": "boolean",
+          "format": "boolean",
+          "description": " 是否递归列出子目录"
+        }
+      },
+      "title": "ListRequest",
+      "required": [
+        "pageoptionaldefault=1",
+        "pageSizeoptionaldefault=20",
+        "pathoptionaldefault=/",
+        "sortByoptionaldefault=updateTime",
+        "orderoptionaldefault=desc",
+        "recursiveoptionaldefault=false"
+      ]
+    },
+    "ListResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MarkdownFile"
+          }
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": " 子路径列表"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "ListResponse",
+      "required": [
+        "total",
+        "files",
+        "page",
+        "pageSize"
+      ]
+    },
+    "MarkdownFile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "size": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "uploadTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "updateTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ownerId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "description": " 预签名的 S3 URL"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "isPublic": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "isDeleted": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "path": {
+          "type": "string",
+          "description": " S3对象的完整路径"
+        }
+      },
+      "title": "MarkdownFile",
+      "required": [
+        "id",
+        "filename",
+        "size",
+        "uploadTime",
+        "updateTime",
+        "ownerId",
+        "downloadUrl",
+        "hash",
+        "isPublic",
+        "isDeleted",
+        "path"
+      ]
+    },
+    "PresignedUrlRequest": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string"
+        },
+        "operation": {
+          "type": "string",
+          "description": " upload, download"
+        },
+        "expireInoptionaldefault=3600": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 默认1小时"
+        }
+      },
+      "title": "PresignedUrlRequest",
+      "required": [
+        "filename",
+        "operation",
+        "expireInoptionaldefault=3600"
+      ]
+    },
+    "PresignedUrlResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "expireAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "PresignedUrlResponse",
+      "required": [
+        "url",
+        "expireAt"
+      ]
+    },
+    "RecoverFileRequest": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string"
+        }
+      },
+      "title": "RecoverFileRequest",
+      "required": [
+        "filename"
+      ]
+    },
+    "RecoverFileResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        }
+      },
+      "title": "RecoverFileResponse"
+    },
+    "SearchRequest": {
+      "type": "object",
+      "properties": {
+        "keyword": {
+          "type": "string"
+        },
+        "isPublicoptional": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "pageoptionaldefault=1": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSizeoptionaldefault=10": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "tagsoptional": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pathoptional": {
+          "type": "string",
+          "description": " 在指定路径下搜索"
+        }
+      },
+      "title": "SearchRequest",
+      "required": [
+        "keyword",
+        "isPublicoptional",
+        "pageoptionaldefault=1",
+        "pageSizeoptionaldefault=10",
+        "tagsoptional",
+        "pathoptional"
+      ]
+    },
+    "SearchResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MarkdownFile"
+          }
+        },
+        "page": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "SearchResponse",
+      "required": [
+        "total",
+        "files",
+        "page",
+        "pageSize"
+      ]
+    },
+    "ShareAccessRequest": {
+      "type": "object",
+      "properties": {
+        "shareCode": {
+          "type": "string"
+        },
+        "passwordoptional": {
+          "type": "string"
+        }
+      },
+      "title": "ShareAccessRequest",
+      "required": [
+        "shareCode",
+        "passwordoptional"
+      ]
+    },
+    "ShareRequest": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string"
+        },
+        "expireInoptionaldefault=86400": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 默认24小时"
+        },
+        "requirePasswordoptional": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "passwordoptional": {
+          "type": "string"
+        }
+      },
+      "title": "ShareRequest",
+      "required": [
+        "filename",
+        "expireInoptionaldefault=86400",
+        "requirePasswordoptional",
+        "passwordoptional"
+      ]
+    },
+    "ShareResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "shareUrl": {
+          "type": "string"
+        },
+        "expireAt": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "ShareResponse",
+      "required": [
+        "shareUrl",
+        "expireAt"
+      ]
+    },
+    "StatsResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "totalFiles": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "publicFiles": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "privateFiles": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "deletedFiles": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "StatsResponse",
+      "required": [
+        "totalFiles",
+        "totalSize",
+        "publicFiles",
+        "privateFiles",
+        "deletedFiles"
+      ]
+    },
+    "TagsResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "TagsResponse",
+      "required": [
+        "tags"
+      ]
+    },
+    "UpdateFileRequest": {
+      "type": "object",
+      "properties": {
+        "isPublicoptional": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "contentoptional": {
+          "type": "string"
+        },
+        "tagsoptional": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filenameoptional": {
+          "type": "string",
+          "description": " 重命名"
+        },
+        "pathoptional": {
+          "type": "string",
+          "description": " 移动文件到其他路径"
+        }
+      },
+      "title": "UpdateFileRequest",
+      "required": [
+        "isPublicoptional",
+        "contentoptional",
+        "tagsoptional",
+        "filenameoptional",
+        "pathoptional"
+      ]
+    },
+    "UpdateFileResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "file": {
+          "$ref": "#/definitions/MarkdownFile"
+        }
+      },
+      "title": "UpdateFileResponse",
+      "required": [
+        "file"
+      ]
+    },
+    "UploadRequest": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/byte"
+          }
+        },
+        "isPublicoptionaldefault=false": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "tagsoptional": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "filenameoptional": {
+          "type": "string"
+        },
+        "pathoptionaldefault=/": {
+          "type": "string",
+          "description": " S3路径，替代文件夹ID"
+        }
+      },
+      "title": "UploadRequest",
+      "required": [
+        "file",
+        "isPublicoptionaldefault=false",
+        "tagsoptional",
+        "filenameoptional",
+        "pathoptionaldefault=/"
+      ]
+    },
+    "UploadResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "file": {
+          "$ref": "#/definitions/MarkdownFile"
+        }
+      },
+      "title": "UploadResponse",
+      "required": [
+        "url",
+        "file"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "apiKey": {
+      "type": "apiKey",
+      "description": "Enter JWT Bearer token **_only_**",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+}

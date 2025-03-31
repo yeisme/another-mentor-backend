@@ -6,6 +6,8 @@ package handler
 import (
 	"net/http"
 
+	markdown "markdown/internal/handler/markdown"
+	public "markdown/internal/handler/public"
 	"markdown/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -13,12 +15,137 @@ import (
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.UserAuth},
+			[]rest.Route{
+				{
+					// 批量删除文件
+					Method:  http.MethodDelete,
+					Path:    "/batch",
+					Handler: markdown.BatchDeleteHandler(serverCtx),
+				},
+				{
+					// 获取文件内容
+					Method:  http.MethodGet,
+					Path:    "/file/:filename",
+					Handler: markdown.DownloadHandler(serverCtx),
+				},
+				{
+					// 删除文件
+					Method:  http.MethodDelete,
+					Path:    "/file/:filename",
+					Handler: markdown.DeleteHandler(serverCtx),
+				},
+				{
+					// 更新文件信息
+					Method:  http.MethodPut,
+					Path:    "/file/:filename",
+					Handler: markdown.UpdateFileHandler(serverCtx),
+				},
+				{
+					// 获取当前用户的文件列表
+					Method:  http.MethodGet,
+					Path:    "/files",
+					Handler: markdown.MyFilesHandler(serverCtx),
+				},
+				{
+					// 获取当前用户公开文件列表
+					Method:  http.MethodGet,
+					Path:    "/files/public",
+					Handler: markdown.MyPublicFilesHandler(serverCtx),
+				},
+				{
+					// 获取当前用户回收站文件
+					Method:  http.MethodGet,
+					Path:    "/files/trash",
+					Handler: markdown.RecycleBinHandler(serverCtx),
+				},
+				{
+					// 清空回收站
+					Method:  http.MethodDelete,
+					Path:    "/files/trash",
+					Handler: markdown.EmptyTrashHandler(serverCtx),
+				},
+				{
+					// 获取预签名URL
+					Method:  http.MethodPost,
+					Path:    "/presigned-url",
+					Handler: markdown.GetPresignedUrlHandler(serverCtx),
+				},
+				{
+					// 恢复已删除文件
+					Method:  http.MethodPost,
+					Path:    "/recover",
+					Handler: markdown.RecoverFileHandler(serverCtx),
+				},
+				{
+					// 搜索文件
+					Method:  http.MethodGet,
+					Path:    "/search",
+					Handler: markdown.SearchHandler(serverCtx),
+				},
+				{
+					// 分享文件
+					Method:  http.MethodPost,
+					Path:    "/share",
+					Handler: markdown.ShareFileHandler(serverCtx),
+				},
+				{
+					// 获取文件统计信息
+					Method:  http.MethodGet,
+					Path:    "/stats",
+					Handler: markdown.StatsHandler(serverCtx),
+				},
+				{
+					// 获取用户所有标签
+					Method:  http.MethodGet,
+					Path:    "/tags",
+					Handler: markdown.GetTagsHandler(serverCtx),
+				},
+				{
+					// 上传文件
+					Method:  http.MethodPost,
+					Path:    "/upload",
+					Handler: markdown.UploadHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithPrefix("/api/v1"),
+	)
+
+	server.AddRoutes(
 		[]rest.Route{
 			{
+				// 获取公开文件
 				Method:  http.MethodGet,
-				Path:    "/from/:name",
-				Handler: MarkdownHandler(serverCtx),
+				Path:    "/file/:hash",
+				Handler: public.GetPublicFileHandler(serverCtx),
+			},
+			{
+				// 浏览公开文件列表
+				Method:  http.MethodGet,
+				Path:    "/files",
+				Handler: public.ListPublicFilesHandler(serverCtx),
+			},
+			{
+				// 搜索公开文件
+				Method:  http.MethodGet,
+				Path:    "/search",
+				Handler: public.SearchPublicHandler(serverCtx),
+			},
+			{
+				// 访问分享链接
+				Method:  http.MethodPost,
+				Path:    "/share/access",
+				Handler: public.AccessSharedFileHandler(serverCtx),
+			},
+			{
+				// 热门标签
+				Method:  http.MethodGet,
+				Path:    "/tags/popular",
+				Handler: public.PopularTagsHandler(serverCtx),
 			},
 		},
+		rest.WithPrefix("/api/v1/public"),
 	)
 }

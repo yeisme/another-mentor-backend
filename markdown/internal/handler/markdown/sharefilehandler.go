@@ -1,24 +1,25 @@
-package handler
+package markdown
 
 import (
 	"net/http"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
-	"markdown/internal/logic"
+	"markdown/internal/logic/markdown"
 	"markdown/internal/svc"
 	"markdown/internal/types"
 )
 
-func MarkdownHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+// 分享文件
+func ShareFileHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.Request
+		var req types.ShareRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		l := logic.NewMarkdownLogic(r.Context(), svcCtx)
-		resp, err := l.Markdown(&req)
+		l := markdown.NewShareFileLogic(r.Context(), svcCtx)
+		resp, err := l.ShareFile(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

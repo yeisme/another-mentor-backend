@@ -1,225 +1,339 @@
 syntax = "v1"
 
 info (
-    title:   "用户服务API"
-    desc:    "用户注册、登录、信息管理服务"
-    author:  "another-mentor"
-    version: "v1"
-    email:   "yefun2004@gmail.com"
+	title:   "Markdown 文件服务 API"
+	desc:    "基于 MinIO 的 Markdown 文件管理服务"
+	author:  "another-mentor"
+	version: "v1"
+	email:   "yefun2004@gmail.com"
 )
 
+// 基础响应结构
 type BaseResponse {
-    Code int    `json:"code"`
-    Msg  string `json:"msg"`
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
 }
 
+// 错误码定义 - 保留核心错误码
+type ErrorCode {
+	Success       int `json:"success"`       // 200: 成功
+	BadRequest    int `json:"badRequest"`    // 400: 请求参数错误
+	Unauthorized  int `json:"unauthorized"`  // 401: 未授权
+	Forbidden     int `json:"forbidden"`     // 403: 禁止访问
+	NotFound      int `json:"notFound"`      // 404: 资源不存在
+	FileTooLarge  int `json:"fileTooLarge"`  // 413: 文件过大
+	InternalError int `json:"internalError"` // 500: 内部服务器错误
+	StorageError  int `json:"storageError"`  // 507: 存储空间不足
+}
+
+// Markdown 文件结构 - 保留必要字段
 type MarkdownFile {
-    Filename    string `json:"filename"`
-    Size        int64  `json:"size"`
-    UploadTime  int64  `json:"uploadTime"`
-    OwnerId     int64  `json:"ownerId"`
-    DownloadURL string `json:"downloadUrl"`
-    Hash        string `json:"hash"`
-    IsPublic    bool   `json:"isPublic"`
-    IsDeleted   bool   `json:"isDeleted"`
+	Id          int64    `json:"id"`
+	Filename    string   `json:"filename"`
+	Size        int64    `json:"size"`
+	UploadTime  int64    `json:"uploadTime"`
+	UpdateTime  int64    `json:"updateTime"`
+	OwnerId     int64    `json:"ownerId"`
+	DownloadURL string   `json:"downloadUrl"` // 预签名的 S3 URL
+	Hash        string   `json:"hash"`
+	IsPublic    bool     `json:"isPublic"`
+	IsDeleted   bool     `json:"isDeleted"`
+	Tags        []string `json:"tags,optional"`
+	Path        string   `json:"path"` // S3对象的完整路径
 }
 
+// 核心请求/响应类型
 type UploadRequest {
-    File     []byte `form:"file"`
-    IsPublic bool   `form:"isPublic,optional,default=false"`
+	File     []byte   `form:"file"`
+	IsPublic bool     `form:"isPublicoptionaldefault=false"`
+	Tags     []string `form:"tagsoptional"`
+	Filename string   `form:"filenameoptional"`
+	Path     string   `form:"pathoptionaldefault=/"` // S3路径，替代文件夹ID
 }
 
 type UploadResponse {
-    BaseResponse
-    URL string `json:"url"`
+	BaseResponse
+	URL  string       `json:"url"`
+	File MarkdownFile `json:"file"`
 }
 
 type DownloadResponse {
-    BaseResponse
-    Content string `json:"content"`
+	BaseResponse
+	Content     string       `json:"content,optional"` // 小文件直接返回内容
+	DownloadURL string       `json:"downloadUrl"`      // 预签名的S3下载URL
+	File        MarkdownFile `json:"file,optional"`
+}
+
+type ListRequest {
+	Page      int    `form:"pageoptionaldefault=1"`
+	PageSize  int    `form:"pageSizeoptionaldefault=20"`
+	Path      string `form:"pathoptionaldefault=/"` // S3路径前缀，替代文件夹ID
+	SortBy    string `form:"sortByoptionaldefault=updateTime"`
+	Order     string `form:"orderoptionaldefault=desc"`
+	Recursive bool   `form:"recursiveoptionaldefault=false"` // 是否递归列出子目录
 }
 
 type ListResponse {
-    BaseResponse
-    Files []MarkdownFile `json:"files"`
+	BaseResponse
+	Total    int64          `json:"total"`
+	Files    []MarkdownFile `json:"files"`
+	Paths    []string       `json:"paths,optional"` // 子路径列表
+	Page     int            `json:"page"`
+	PageSize int            `json:"pageSize"`
 }
 
 type DeleteResponse {
-    BaseResponse
+	BaseResponse
 }
 
 type UpdateFileRequest {
-    IsPublic bool   `json:"isPublic,optional"`
-    Content  string `json:"content,optional"`
+	IsPublic bool     `json:"isPublicoptional"`
+	Content  string   `json:"contentoptional"`
+	Tags     []string `json:"tagsoptional"`
+	Filename string   `json:"filenameoptional"` // 重命名
+	Path     string   `json:"pathoptional"`     // 移动文件到其他路径
 }
 
 type UpdateFileResponse {
-    BaseResponse
+	BaseResponse
+	File MarkdownFile `json:"file"`
 }
 
+// 精简后的分享相关类型
 type ShareRequest {
-    Filename string `json:"filename"`
-    ExpireIn int64  `json:"expireIn,optional"` // 过期时间（秒），0表示永不过期
+	Filename        string `json:"filename"`
+	ExpireIn        int64  `json:"expireInoptionaldefault=86400"` // 默认24小时
+	RequirePassword bool   `json:"requirePasswordoptional"`
+	Password        string `json:"passwordoptional"`
 }
 
 type ShareResponse {
-    BaseResponse
-    ShareURL string `json:"shareUrl"`
+	BaseResponse
+	ShareURL string `json:"shareUrl"`
+	ExpireAt int64  `json:"expireAt"`
 }
 
+type ShareAccessRequest {
+	ShareCode string `form:"shareCode"`
+	Password  string `form:"passwordoptional"`
+}
+
+// 回收站相关
 type RecoverFileRequest {
-    Filename string `json:"filename"`
+	Filename string `json:"filename"`
 }
 
 type RecoverFileResponse {
-    BaseResponse
+	BaseResponse
 }
 
+// 简化的搜索请求
 type SearchRequest {
-    Keyword  string `form:"keyword"`
-    IsPublic bool   `form:"isPublic,optional"`
-    Page     int    `form:"page,optional,default=1"`
-    PageSize int    `form:"pageSize,optional,default=10"`
+	Keyword  string   `form:"keyword"`
+	IsPublic bool     `form:"isPublicoptional"`
+	Page     int      `form:"pageoptionaldefault=1"`
+	PageSize int      `form:"pageSizeoptionaldefault=10"`
+	Tags     []string `form:"tagsoptional"`
+	Path     string   `form:"pathoptional"` // 在指定路径下搜索
 }
 
 type SearchResponse {
-    BaseResponse
-    Total int64          `json:"total"`
-    Files []MarkdownFile `json:"files"`
+	BaseResponse
+	Total    int64          `json:"total"`
+	Files    []MarkdownFile `json:"files"`
+	Page     int            `json:"page"`
+	PageSize int            `json:"pageSize"`
 }
 
+// 批量操作 - 保留最核心的批量删除
 type BatchDeleteRequest {
-    Filenames []string `json:"filenames"`
+	Filenames []string `json:"filenames"`
 }
 
 type BatchDeleteResponse {
-    BaseResponse
+	BaseResponse
+	SuccessCount int `json:"successCount"`
+	FailedCount  int `json:"failedCount"`
 }
 
+// 简化的统计信息
 type StatsResponse {
-    BaseResponse
-    TotalFiles      int64 `json:"totalFiles"`
-    TotalSize       int64 `json:"totalSize"`
-    PublicFiles     int64 `json:"publicFiles"`
-    PrivateFiles    int64 `json:"privateFiles"`
-    DeletedFiles    int64 `json:"deletedFiles"`
+	BaseResponse
+	TotalFiles   int64 `json:"totalFiles"`
+	TotalSize    int64 `json:"totalSize"`
+	PublicFiles  int64 `json:"publicFiles"`
+	PrivateFiles int64 `json:"privateFiles"`
+	DeletedFiles int64 `json:"deletedFiles"`
+}
+
+// 标签相关
+type TagsResponse {
+	BaseResponse
+	Tags []string `json:"tags"`
+}
+
+// 简化的预签名URL请求
+type PresignedUrlRequest {
+	Filename  string `json:"filename"`
+	Operation string `json:"operation"`                    // upload, download
+	ExpireIn  int64  `json:"expireInoptionaldefault=3600"` // 默认1小时
+}
+
+type PresignedUrlResponse {
+	BaseResponse
+	URL      string `json:"url"`
+	ExpireAt int64  `json:"expireAt"`
 }
 
 @server (
-    group:      markdown
-    prefix:     /api/v1
-    middleware: UserAuth
+	group:      markdown
+	prefix:     /api/v1
+	middleware: UserAuth
 )
-service user-markdown-s3-api {
+service markdown {
+	@doc (
+		summary: "上传文件"
+		desc:    "上传Markdown文件，支持标签和路径"
+	)
+	@handler UploadHandler
+	post /upload (UploadRequest) returns (UploadResponse)
 
-    @doc(
-        summary: "上传文件",
-        desc:    "上传文件，可选是否公开",
-    )
-    @handler UploadHandler
-    post /upload (UploadRequest) returns (UploadResponse)
-    
-    @doc(
-        summary: "根据文件名下载文件",
-        desc:    "根据文件名下载文件",
-    )
-    @handler DownloadHandler
-    get /file/:filename (DownloadResponse)
-    
-    @doc(
-        summary: "根据OwnerId获取文件列表",
-        desc:    "根据OwnerId获取公开的文件列表",
-    )
-    @handler ListHandler
-    get /list/:ownerId (ListResponse)
-    
-    @doc(
-        summary: "获取当前用户的文件列表",
-        desc:    "获取当前登录用户的所有文件列表",
-    )
-    @handler MyFilesHandler
-    get /list/ (ListResponse)
+	@doc (
+		summary: "获取文件内容"
+		desc:    "获取Markdown文件内容或下载链接"
+	)
+	@handler DownloadHandler
+	get /file/:filename (DownloadResponse) returns (DownloadResponse)
 
-    @doc(
-        summary: "获取当前用户回收站文件",
-        desc:    "获取当前用户已删除但可恢复的文件",
-    )
-    @handler RecycleBinHandler
-    get /recycle (ListResponse)
-    
-    @doc(
-        summary: "根据文件名删除文件",
-        desc:    "根据文件名删除文件（软删除）",
-    )
-    @handler DeleteHandler
-    delete /file/:filename (DeleteResponse)
+	@doc (
+		summary: "获取当前用户的文件列表"
+		desc:    "获取当前登录用户的所有文件列表"
+	)
+	@handler MyFilesHandler
+	get /files (ListRequest) returns (ListResponse)
 
-    @doc(
-        summary: "根据 Hash 删除文件",
-        desc:    "根据 Hash 删除文件",
-    )
-    @handler DeleteByHashHandler
-    delete /hash/:hash (DeleteResponse)
+	@doc (
+		summary: "获取当前用户公开文件列表"
+		desc:    "获取当前登录用户的公开文件列表"
+	)
+	@handler MyPublicFilesHandler
+	get /files/public (ListRequest) returns (ListResponse)
 
-    @doc(
-        summary: "更新文件信息",
-        desc:    "更新文件内容或公开状态",
-    )
-    @handler UpdateFileHandler
-    put /file/:filename (UpdateFileRequest) returns (UpdateFileResponse)
+	@doc (
+		summary: "获取当前用户回收站文件"
+		desc:    "获取当前用户已删除但可恢复的文件"
+	)
+	@handler RecycleBinHandler
+	get /files/trash (ListRequest) returns (ListResponse)
 
-    @doc(
-        summary: "分享文件",
-        desc:    "生成文件分享链接",
-    )
-    @handler ShareFileHandler
-    post /share (ShareRequest) returns (ShareResponse)
+	@doc (
+		summary: "清空回收站"
+		desc:    "永久删除回收站中的所有文件"
+	)
+	@handler EmptyTrashHandler
+	delete /files/trash returns (DeleteResponse)
 
-    @doc(
-        summary: "恢复已删除文件",
-        desc:    "从回收站恢复文件",
-    )
-    @handler RecoverFileHandler
-    post /recover (RecoverFileRequest) returns (RecoverFileResponse)
+	@doc (
+		summary: "删除文件"
+		desc:    "软删除文件到回收站"
+	)
+	@handler DeleteHandler
+	delete /file/:filename returns (DeleteResponse)
 
-    @doc(
-        summary: "搜索文件",
-        desc:    "根据关键词搜索文件",
-    )
-    @handler SearchHandler
-    get /search (SearchRequest) returns (SearchResponse)
+	@doc (
+		summary: "更新文件信息"
+		desc:    "更新文件内容或元数据"
+	)
+	@handler UpdateFileHandler
+	put /file/:filename (UpdateFileRequest) returns (UpdateFileResponse)
 
-    @doc(
-        summary: "批量删除文件",
-        desc:    "批量删除多个文件",
-    )
-    @handler BatchDeleteHandler
-    delete /batch (BatchDeleteRequest) returns (BatchDeleteResponse)
+	@doc (
+		summary: "分享文件"
+		desc:    "生成文件分享链接"
+	)
+	@handler ShareFileHandler
+	post /share (ShareRequest) returns (ShareResponse)
 
-    @doc(
-        summary: "获取文件统计信息",
-        desc:    "获取当前用户的文件统计信息",
-    )
-    @handler StatsHandler
-    get /stats returns (StatsResponse)
+	@doc (
+		summary: "恢复已删除文件"
+		desc:    "从回收站恢复文件"
+	)
+	@handler RecoverFileHandler
+	post /recover (RecoverFileRequest) returns (RecoverFileResponse)
+
+	@doc (
+		summary: "搜索文件"
+		desc:    "根据关键词搜索文件"
+	)
+	@handler SearchHandler
+	get /search (SearchRequest) returns (SearchResponse)
+
+	@doc (
+		summary: "批量删除文件"
+		desc:    "批量删除多个文件"
+	)
+	@handler BatchDeleteHandler
+	delete /batch (BatchDeleteRequest) returns (BatchDeleteResponse)
+
+	@doc (
+		summary: "获取文件统计信息"
+		desc:    "获取当前用户的文件统计信息"
+	)
+	@handler StatsHandler
+	get /stats returns (StatsResponse)
+
+	@doc (
+		summary: "获取用户所有标签"
+		desc:    "获取当前用户使用的所有标签"
+	)
+	@handler GetTagsHandler
+	get /tags returns (TagsResponse)
+
+	@doc (
+		summary: "获取预签名URL"
+		desc:    "获取用于直接上传或下载的预签名URL"
+	)
+	@handler GetPresignedUrlHandler
+	post /presigned-url (PresignedUrlRequest) returns (PresignedUrlResponse)
 }
 
 @server (
-    group:      public
-    prefix:     /api/v1/public
+	group:  public
+	prefix: /api/v1/public
 )
-service user-markdown-s3-api {
-    @doc(
-        summary: "获取公开文件",
-        desc:    "无需登录获取公开文件内容",
-    )
-    @handler GetPublicFileHandler
-    get /file/:hash (DownloadResponse)
-    
-    @doc(
-        summary: "浏览公开文件列表",
-        desc:    "浏览所有用户共享的公开文件",
-    )
-    @handler ListPublicFilesHandler
-    get /files (ListResponse)
+service markdown {
+	@doc (
+		summary: "获取公开文件"
+		desc:    "无需登录获取公开文件内容"
+	)
+	@handler GetPublicFileHandler
+	get /file/:hash (DownloadResponse)
+
+	@doc (
+		summary: "浏览公开文件列表"
+		desc:    "浏览所有用户共享的公开文件"
+	)
+	@handler ListPublicFilesHandler
+	get /files (ListRequest) returns (ListResponse)
+
+	@doc (
+		summary: "访问分享链接"
+		desc:    "通过分享码和可能的密码访问文件"
+	)
+	@handler AccessSharedFileHandler
+	post /share/access (ShareAccessRequest) returns (DownloadResponse)
+
+	@doc (
+		summary: "搜索公开文件"
+		desc:    "搜索所有用户的公开文件"
+	)
+	@handler SearchPublicHandler
+	get /search (SearchRequest) returns (SearchResponse)
+
+	@doc (
+		summary: "热门标签"
+		desc:    "获取系统中最热门的标签列表"
+	)
+	@handler PopularTagsHandler
+	get /tags/popular returns (TagsResponse)
 }

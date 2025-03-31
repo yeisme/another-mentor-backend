@@ -47,15 +47,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7.4.2-alpine3.21
-    ports:
-      - "6379:6379"
-    networks:
-      - another-mentor-network
-    restart: always
-    command: ["redis-server", "--appendonly", "yes"]
-
 networks:
   another-mentor-network:
     driver: bridge
