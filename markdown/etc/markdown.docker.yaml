@@ -29,3 +29,12 @@ s3:
 
   cacheControl: "max-age=86400"
   timeout: 30
+
+data:
+  driver: postgres
+  dsn: host=localhost port=5433 user=postgres password=postgres dbname=markdown sslmode=disable TimeZone=Asia/Shanghai
+  gorm:
+    maxIdleConns: 10
+    connmaxlifetime: 300
+    maxOpenConns: 100
+    autoMigrate: true

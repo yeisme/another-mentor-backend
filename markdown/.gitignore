@@ -2,3 +2,4 @@
 dist/
 logs/
 *_data/
+.env

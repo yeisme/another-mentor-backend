@@ -4,6 +4,7 @@ import (
 	"flag"
 
 	"markdown/internal/config"
+	"markdown/internal/data"
 	"markdown/internal/handler"
 	"markdown/internal/svc"
 
@@ -20,8 +21,12 @@ func main() {
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
 
+	// 加载日志配置
 	logx.MustSetup(c.Log)
 	logx.Info("configuration loaded successfully")
+
+	// 初始化与存储相关的服务
+	data.InitDataService(c)
 	
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()

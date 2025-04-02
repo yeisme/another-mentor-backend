@@ -3,7 +3,5 @@
 logs/
 *_data/
 
-init.sql
-
 Makefile
 user.api
