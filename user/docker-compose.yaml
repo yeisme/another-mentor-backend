@@ -36,7 +36,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./user_data:/var/lib/postgresql/data
+      - user_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - another-mentor-network
@@ -59,3 +59,5 @@ services:
 networks:
   another-mentor-network:
     driver: bridge
+    external: true
+  

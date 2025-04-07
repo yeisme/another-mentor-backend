@@ -8,6 +8,26 @@ x-markdown-configs: &pg-config-env
   TZ: Asia/Shanghai
 
 services:
+  markdown-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8090:8080"
+      - "8091:9090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
+      <<: *pg-config-env
+    networks:
+      - another-mentor-network
+    volumes:
+      - ./logs:/app/logs
+      - ./etc:/app/etc
+    command: ["./markdown", "-f", "etc/markdown-api.docker.yaml"]
+    restart: always
   postgres:
     image: postgres:17-alpine
     environment:
@@ -35,6 +55,8 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
       MINIO_REGION: "ap-east-1"
+      MINIO_PROMETHEUS_AUTH_TYPE: "public"
+      # MINIO_PROMETHEUS_URL: "http://prometheus:9090"
     volumes:
       - minio_data:/data
     command: server /data --console-address ":9001" --address ":9000"
@@ -53,3 +75,4 @@ volumes:
 networks:
   another-mentor-network:
     driver: bridge
+    external: true

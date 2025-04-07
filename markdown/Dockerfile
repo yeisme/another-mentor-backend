@@ -22,7 +22,7 @@ COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/S
 ENV TZ=Asia/Shanghai
 
 WORKDIR /app
-COPY --from=builder /app/user /app/user
+COPY --from=builder /app/markdown /app/markdown
 COPY ./etc /app/etc
 
-CMD ["./markdown", "-f", "etc/user-api.yaml"]
+CMD ["./markdown", "-f", "etc/markdown.docker.yaml"]
