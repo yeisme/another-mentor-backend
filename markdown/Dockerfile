@@ -13,7 +13,7 @@ ADD go.sum .
 RUN go mod download
 COPY . .
 
-RUN go build -ldflags="-s -w" -o /app/user .
+RUN go build -ldflags="-s -w" -o /app/markdown .
 
 FROM scratch
 

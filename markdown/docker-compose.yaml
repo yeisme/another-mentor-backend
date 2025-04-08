@@ -8,7 +8,7 @@ x-markdown-configs: &pg-config-env
   TZ: Asia/Shanghai
 
 services:
-  markdown-api:
+  markdown:
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,7 +16,7 @@ services:
       - "8090:8080"
       - "8091:9090"
     depends_on:
-      postgres:
+      markdown-postgres:
         condition: service_healthy
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST:-postgres}
@@ -26,9 +26,10 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./etc:/app/etc
-    command: ["./markdown", "-f", "etc/markdown-api.docker.yaml"]
+    command: ["./markdown", "-f", "etc/markdown.docker.yaml"]
     restart: always
-  postgres:
+
+  markdown-postgres:
     image: postgres:17-alpine
     environment:
       <<: *pg-config-env
@@ -45,6 +46,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
   minio:
     image: minio/minio:RELEASE.2025-03-12T18-04-18Z
     container_name: minio

@@ -38,3 +38,9 @@ data:
     connmaxlifetime: 300
     maxOpenConns: 100
     autoMigrate: true
+
+Telemetry:
+  Name: user-api
+  Endpoint: http://tempo:4318/v1/traces
+  Sampler: 1.0
+  Batcher: otlp 

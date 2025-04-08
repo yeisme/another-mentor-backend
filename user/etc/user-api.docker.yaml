@@ -38,3 +38,9 @@ data:
 Auth:
   AccessSecret: your_secret_key_here_please_change_in_production
   AccessExpire: 604800 # 7天，单位为秒
+
+Telemetry:
+  Name: user-api
+  Endpoint: http://tempo:4318/v1/traces
+  Sampler: 1.0
+  Batcher: otlp 
