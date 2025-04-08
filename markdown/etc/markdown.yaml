@@ -41,7 +41,7 @@ data:
     autoMigrate: true
 
 Telemetry:
-  Name: user-api
+  Name: markdown-api
   Endpoint: http://localhost:4318/v1/traces
   Sampler: 1.0
   Batcher: otlp 
