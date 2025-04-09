@@ -58,6 +58,5 @@ services:
 
 networks:
   another-mentor-network:
-    driver: bridge
     external: true
   

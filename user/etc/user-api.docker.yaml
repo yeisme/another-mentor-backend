@@ -41,6 +41,6 @@ Auth:
 
 Telemetry:
   Name: user-api
-  Endpoint: http://user-tempo:4318/v1/traces
+  Endpoint: http://tempo:4318/v1/traces
   Sampler: 1.0
   Batcher: otlp 
