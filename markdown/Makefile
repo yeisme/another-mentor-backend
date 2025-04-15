@@ -52,3 +52,7 @@ dev:
 # 一键式开发环境设置
 .PHONY: dev-setup
 dev-setup: init goctl.gen
+
+docker.dev:
+	docker compose -f docker-compose.dev.yml up -d
+	
